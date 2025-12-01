@@ -38,6 +38,14 @@
       margin-bottom: 24px;
     }
 
+    .logo-icon {
+      width: 80px;
+      height: 80px;
+      margin-bottom: 16px;
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(0, 105, 233, 0.3);
+    }
+
     .logo svg {
       height: 32px;
       width: auto;
@@ -104,8 +112,8 @@
     }
 
     .copy-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 24px rgba(0, 105, 233, 0.4);
+      transform: scale(1.02);
+      box-shadow: 0 8px 24px rgba(0, 105, 233, 0.2);
     }
 
     .copy-btn:active {
@@ -113,7 +121,7 @@
     }
 
     .copy-btn.copied {
-      background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+      background: #059669;
     }
 
     .copy-btn svg {
@@ -250,6 +258,9 @@
 </head>
 <body>
   <div class="card">
+    <!-- Icon -->
+    <img src="FigDriveIcon.png" alt="FIGdrive" class="logo-icon">
+    
     <!-- Logo -->
     <div class="logo">
       <svg width="140" height="32" viewBox="0 0 1265 233" fill="none" xmlns="http://www.w3.org/2000/svg">
