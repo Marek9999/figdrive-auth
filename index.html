@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FIGdrive - Authorization</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #0057D9 0%, #0069E9 50%, #2B88FF 100%);
+      padding: 20px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 20px;
+      padding: 48px 40px;
+      max-width: 420px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 0 25px 80px rgba(0, 0, 0, 0.3);
+    }
+
+    .logo {
+      margin-bottom: 24px;
+    }
+
+    .logo svg {
+      height: 32px;
+      width: auto;
+    }
+
+    h1 {
+      font-size: 24px;
+      font-weight: 700;
+      color: #1a1a1a;
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      font-size: 15px;
+      color: #666;
+      margin-bottom: 32px;
+      line-height: 1.5;
+    }
+
+    .token-container {
+      background: #f5f7fa;
+      border: 2px solid #e1e5eb;
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 20px;
+      position: relative;
+    }
+
+    .token-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: #888;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 8px;
+    }
+
+    .token-value {
+      font-family: 'SF Mono', 'Monaco', 'Consolas', monospace;
+      font-size: 13px;
+      color: #333;
+      word-break: break-all;
+      max-height: 80px;
+      overflow-y: auto;
+      text-align: left;
+      line-height: 1.4;
+    }
+
+    .copy-btn {
+      background: linear-gradient(135deg, #0057D9 0%, #0069E9 100%);
+      color: white;
+      border: none;
+      padding: 16px 32px;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      width: 100%;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .copy-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0, 105, 233, 0.4);
+    }
+
+    .copy-btn:active {
+      transform: translateY(0);
+    }
+
+    .copy-btn.copied {
+      background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+    }
+
+    .copy-btn svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    .instructions {
+      margin-top: 24px;
+      padding-top: 24px;
+      border-top: 1px solid #e5e5e5;
+    }
+
+    .instructions p {
+      font-size: 13px;
+      color: #888;
+      line-height: 1.6;
+    }
+
+    .step {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      text-align: left;
+      margin-bottom: 12px;
+    }
+
+    .step-num {
+      background: #0069E9;
+      color: white;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+
+    .step-text {
+      font-size: 14px;
+      color: #444;
+      padding-top: 2px;
+    }
+
+    /* Error state */
+    .error-state {
+      display: none;
+    }
+
+    .error-state.visible {
+      display: block;
+    }
+
+    .error-icon {
+      width: 64px;
+      height: 64px;
+      background: #fef2f2;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 20px;
+    }
+
+    .error-icon svg {
+      width: 32px;
+      height: 32px;
+      color: #ef4444;
+    }
+
+    .error-title {
+      font-size: 20px;
+      font-weight: 600;
+      color: #1a1a1a;
+      margin-bottom: 8px;
+    }
+
+    .error-message {
+      font-size: 14px;
+      color: #666;
+      margin-bottom: 24px;
+    }
+
+    .retry-btn {
+      background: #f5f5f5;
+      color: #333;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+    }
+
+    .retry-btn:hover {
+      background: #eee;
+    }
+
+    /* Success state */
+    .success-state {
+      display: none;
+    }
+
+    .success-state.visible {
+      display: block;
+    }
+
+    /* Loading state */
+    .loading-state {
+      display: none;
+    }
+
+    .loading-state.visible {
+      display: block;
+    }
+
+    .spinner {
+      width: 48px;
+      height: 48px;
+      border: 4px solid #e5e5e5;
+      border-top-color: #0069E9;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 20px;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <!-- Logo -->
+    <div class="logo">
+      <svg width="140" height="32" viewBox="0 0 1265 233" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M1183.04 231.278C1166.12 231.278 1151.18 227.726 1138.23 220.623C1125.48 213.31 1115.66 203.073 1108.77 189.911C1101.87 176.54 1098.43 161.08 1098.43 143.53C1098.43 125.981 1101.87 110.625 1108.77 97.4626C1115.66 84.0916 1125.48 73.8543 1138.23 66.7509C1150.97 59.4386 1165.8 55.7825 1182.73 55.7825C1199.23 55.7825 1213.65 59.4386 1225.97 66.7509C1238.51 74.0633 1248.12 84.6139 1254.8 98.4028C1261.49 111.983 1264.83 128.07 1264.83 146.664V156.066H1147C1147.42 169.019 1150.86 178.838 1157.34 185.524C1163.82 192.209 1172.7 195.552 1183.98 195.552C1191.92 195.552 1198.5 193.881 1203.72 190.538C1209.15 187.195 1213.02 182.076 1215.32 175.182L1262.64 178.002C1258.04 194.716 1248.64 207.774 1234.43 217.176C1220.44 226.577 1203.3 231.278 1183.04 231.278ZM1216.88 127.234C1216.26 115.326 1212.92 106.237 1206.86 99.9697C1200.8 93.702 1192.75 90.5682 1182.73 90.5682C1172.7 90.5682 1164.55 93.8065 1158.28 100.283C1152.01 106.76 1148.25 115.743 1147 127.234H1216.88Z" fill="#252525"/>
+        <path d="M910.385 59.5432H959.586L999.386 180.196L1039.19 59.5432H1088.07L1026.65 227.517H971.808L910.385 59.5432Z" fill="#252525"/>
+        <path d="M836.348 59.5432H883.355V227.517H836.348V59.5432ZM835.407 1.25366H883.982V38.8598H835.407V1.25366Z" fill="#252525"/>
+        <path d="M707.199 59.5432H751.7L753.266 108.431L749.819 107.491C752.535 90.5683 757.34 78.3463 764.235 70.8251C771.129 63.3038 780.635 59.5432 792.753 59.5432H808.109V98.4029H792.753C783.769 98.4029 776.457 99.6564 770.816 102.164C765.175 104.462 760.997 108.118 758.281 113.132C755.565 118.146 754.207 124.832 754.207 133.189V227.517H707.199V59.5432Z" fill="#252525"/>
+        <path d="M572.115 231.278C558.326 231.278 546.209 227.726 535.763 220.623C525.317 213.31 517.273 203.073 511.632 189.911C506.2 176.749 503.484 161.289 503.484 143.53C503.484 125.772 506.305 110.311 511.946 97.1493C517.586 83.9871 525.526 73.8543 535.763 66.7509C546.209 59.4386 558.326 55.7825 572.115 55.7825C584.024 55.7825 594.261 58.2896 602.827 63.3037C611.602 68.1089 618.287 74.7945 622.884 83.3603V5.01416H669.891V227.517H624.764L623.824 202.76C619.228 211.744 612.333 218.742 603.14 223.757C594.157 228.771 583.815 231.278 572.115 231.278ZM587.785 195.239C595.306 195.239 601.678 193.254 606.901 189.284C612.124 185.315 616.094 179.569 618.81 172.048C621.526 164.318 622.884 154.812 622.884 143.53C622.884 132.248 621.526 122.742 618.81 115.012C616.094 107.282 612.124 101.537 606.901 97.776C601.678 93.8065 595.306 91.8217 587.785 91.8217C576.712 91.8217 567.937 96.5225 561.46 105.924C554.984 115.117 551.745 127.652 551.745 143.53C551.745 159.199 554.984 171.735 561.46 181.136C568.146 190.538 576.921 195.239 587.785 195.239Z" fill="#252525"/>
+        <path d="M373.08 232.531C351.978 232.531 333.698 227.726 318.237 218.116C302.986 208.296 291.182 194.612 282.825 177.062C274.677 159.513 270.603 139.352 270.603 116.579C270.603 94.2243 274.781 74.2722 283.138 56.7226C291.704 38.9641 303.926 25.0708 319.804 15.0425C335.682 5.01415 354.485 0 376.213 0C404 0 425.833 6.79 441.711 20.37C457.589 33.95 468.14 53.1709 473.363 78.0328L423.848 80.2265C421.55 67.2732 416.536 57.3494 408.805 50.4549C401.284 43.5605 390.525 40.1132 376.527 40.1132C357.933 40.1132 343.726 47.2166 333.906 61.4234C324.296 75.4212 319.491 93.8065 319.491 116.579C319.491 131.83 321.58 145.097 325.758 156.379C329.937 167.661 336.309 176.54 344.875 183.017C353.441 189.284 364.2 192.418 377.154 192.418C386.764 192.418 395.225 190.538 402.538 186.777C409.85 182.808 415.595 177.376 419.774 170.481C423.952 163.378 426.355 155.439 426.982 146.664H376.527V111.878H473.989V227.517H444.531L442.024 179.883L447.665 182.39C445.367 192.209 440.666 200.88 433.563 208.401C426.668 215.922 417.894 221.876 407.238 226.264C396.792 230.442 385.406 232.531 373.08 232.531Z" fill="#0069E9"/>
+        <path d="M189.439 5.01416H237.073V227.517H189.439V5.01416Z" fill="#0069E9"/>
+        <path d="M0 5.01416H153.558V45.1274H21.3102L47.6345 17.8629V119.713L21.3102 99.0295H147.918V138.516H21.3102L47.6345 117.833V227.517H0V5.01416Z" fill="#0069E9"/>
+      </svg>
+    </div>
+
+    <!-- Loading State -->
+    <div id="loading-state" class="loading-state">
+      <div class="spinner"></div>
+      <p style="color: #666;">Processing authorization...</p>
+    </div>
+
+    <!-- Success State -->
+    <div id="success-state" class="success-state">
+      <h1>Authorization Complete!</h1>
+      <p class="subtitle">Copy the token below and paste it into FIGdrive in Figma.</p>
+
+      <div class="token-container">
+        <div class="token-label">Access Token</div>
+        <div id="token-value" class="token-value"></div>
+      </div>
+
+      <button id="copy-btn" class="copy-btn" onclick="copyToken()">
+        <svg id="copy-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+        </svg>
+        <svg id="check-icon" style="display: none;" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+        </svg>
+        <span id="copy-text">Copy Token</span>
+      </button>
+
+      <div class="instructions">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-text">Click "Copy Token" above</div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-text">Go back to Figma and paste in the token field</div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-text">Click "Save & Connect" — you're done!</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Error State -->
+    <div id="error-state" class="error-state">
+      <div class="error-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+        </svg>
+      </div>
+      <div class="error-title">Authorization Failed</div>
+      <p id="error-message" class="error-message">Something went wrong during authorization.</p>
+      <button class="retry-btn" onclick="window.close()">Close Window</button>
+    </div>
+  </div>
+
+  <script>
+    let accessToken = null;
+
+    function init() {
+      const loadingState = document.getElementById('loading-state');
+      const successState = document.getElementById('success-state');
+      const errorState = document.getElementById('error-state');
+      const tokenValue = document.getElementById('token-value');
+      const errorMessage = document.getElementById('error-message');
+
+      // Show loading initially
+      loadingState.classList.add('visible');
+
+      // Parse the hash fragment
+      const hash = window.location.hash.substring(1);
+      const params = new URLSearchParams(hash);
+
+      // Check for token
+      accessToken = params.get('access_token');
+      const error = params.get('error');
+      const errorDesc = params.get('error_description');
+
+      setTimeout(() => {
+        loadingState.classList.remove('visible');
+
+        if (accessToken) {
+          // Success!
+          tokenValue.textContent = accessToken;
+          successState.classList.add('visible');
+        } else if (error) {
+          // OAuth error
+          errorMessage.textContent = errorDesc || `Error: ${error}`;
+          errorState.classList.add('visible');
+        } else {
+          // No token and no error - probably direct access
+          errorMessage.textContent = 'No authorization data found. Please start the sign-in process from the FIGdrive plugin in Figma.';
+          errorState.classList.add('visible');
+        }
+      }, 500);
+    }
+
+    function copyToken() {
+      if (!accessToken) return;
+
+      navigator.clipboard.writeText(accessToken).then(() => {
+        const btn = document.getElementById('copy-btn');
+        const copyIcon = document.getElementById('copy-icon');
+        const checkIcon = document.getElementById('check-icon');
+        const copyText = document.getElementById('copy-text');
+
+        btn.classList.add('copied');
+        copyIcon.style.display = 'none';
+        checkIcon.style.display = 'block';
+        copyText.textContent = 'Copied!';
+
+        setTimeout(() => {
+          btn.classList.remove('copied');
+          copyIcon.style.display = 'block';
+          checkIcon.style.display = 'none';
+          copyText.textContent = 'Copy Token';
+        }, 2000);
+      }).catch(err => {
+        // Fallback for older browsers
+        const textArea = document.createElement('textarea');
+        textArea.value = accessToken;
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+        
+        const copyText = document.getElementById('copy-text');
+        copyText.textContent = 'Copied!';
+        setTimeout(() => {
+          copyText.textContent = 'Copy Token';
+        }, 2000);
+      });
+    }
+
+    // Initialize on page load
+    init();
+  </script>
+</body>
+</html>
+
